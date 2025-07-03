@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guest Dashboard -EA Hotel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* Sticky Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #1c1b29;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 25px;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #ffcc00;
+}
+
+.book-now {
+  background-color: #ff9900;
+  padding: 8px 15px;
+  border-radius: 5px;
+  color: white;
+}
+.book-now:hover {
+  background-color: #cc7a00;
+}
+
+/* Hero Section */
+.hero {
+  background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.hero-content {
+  background-color: rgba(0,0,0,0.5);
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.hero-content h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.hero-button {
+  background-color: #ff9900;
+  padding: 10px 20px;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.hero-button:hover {
+  background-color: #cc7a00;
+}
+
+/* QR Section */
+.qr-section {
+  text-align: center;
+  background-color: #fff;
+  padding: 30px 10px;
+}
+
+.qr-section img {
+  margin-top: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+/* Reviews */
+.reviews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 30px;
+  background-color: #fafafa;
+}
+
+.review-card {
+  background-color: white;
+  width: 300px;
+  padding: 20px;
+  margin: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.review-card h4 {
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+.review-card p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+.stars {
+  color: gold;
+  font-size: 16px;
+  margin: 5px 0;
+  letter-spacing: 1px;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Sticky Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">🏨 EA Hotel & Resort</div>
+    <nav class="nav-links">
+      <a href="guestdashboard.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="room.html">Rooms</a>
+      <a href="bookinghistory.html">Your History</a>
+      <a href="login.html" class="book-now">Log out</a>
+    </nav>
+    <div id="user-info" style="color:white; font-size:16px;"></div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Book Your Stay</h1>
+      <p>Experience luxury and comfort at EA Hotel & Resort.</p>
+      <a href="room.html" class="hero-button">Book Now</a>
+    </div>
+  </section>
+
+  <!-- QR Review Section -->
+  <section class="qr-section">
+    <p>click on the QR code to add new Reviews</p>
+    <a href="feedbackform.html"><img src="https://api.qrserver.com/v1/create-qr-code/?data=https://your-review-link.com&size=100x100" alt="QR Code"></a>
+    
+  </section>
+  <section class="reviews">
+</section>
+<script>
+  async function loadFeedbacks() {
+    try {
+      const username = localStorage.getItem("guestUsername");
+  const role = localStorage.getItem("guestRole");
+  if (!username || !role) {
+    // No user info? Redirect to login.
+    window.location.href = "login.html";
+  }
+   else {
+const userInfo = document.getElementById("user-info");
+userInfo.innerHTML = `<i class="fas fa-user-circle"></i> ${username} (${role})`;}
+
+
+      const response = await fetch("http://localhost:5189/feedbacks");
+      const data = await response.json();
+
+      const reviewsSection = document.querySelector('.reviews');
+      reviewsSection.innerHTML = ""; // Clear existing reviews
+
+      data.forEach(fb => {
+        const card = document.createElement("div");
+        card.className = "review-card";
+
+        const name = fb.FEEDBACKTYPE.toLowerCase() === "anonymous" ? "Anonymous Guest" : fb.USERNAME;
+
+        // Render filled (★) and empty (☆) stars
+        const starCount = parseInt(fb.STARS) || 0;
+        const starsHTML = `<div class="stars">` +
+                          "★".repeat(starCount) +
+                          "☆".repeat(5 - starCount) +
+                          `</div>`;
+
+        card.innerHTML = `
+          <h4>${name}</h4>
+          ${starsHTML}
+          <p>${fb.DESCRIPTION}</p>
+        `;
+
+        reviewsSection.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Error loading feedbacks:", err);
+    }
+  }
+
+  window.onload = loadFeedbacks;
+</script>
+</body>
+</html>

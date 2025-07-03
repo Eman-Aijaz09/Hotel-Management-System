@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us - Marimar Hotel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    /* Sticky Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    .book-now {
+      background-color: #ff9900;
+      padding: 8px 15px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .book-now:hover {
+      background-color: #cc7a00;
+    }
+
+    /* Sections */
+    .section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .section h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #1c1b29;
+    }
+
+    .section p {
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+
+    /* Contact Info Styling */
+    .contact-details {
+      font-size: 18px;
+      line-height: 1.8;
+      padding: 10px 0;
+    }
+
+    .contact-details strong {
+      display: inline-block;
+      width: 120px;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #1c1b29;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sticky Navigation Bar -->
+<header class="navbar">
+  <div class="logo">🏨 EA Hotel & Resort</div>
+  
+  <nav class="nav-links">
+    <a href="guestdashboard.html">Home</a>
+    <a href="about.html">About Us</a>
+    <a href="room.html">Rooms</a>
+    <a href="bookinghistory.html">Your History</a>
+    <a href="login.html" class="book-now">Log out</a>
+  </nav>
+
+  <!-- Username in the corner -->
+  <div id="user-info">
+    <i class="fas fa-user-circle"></i> Guest
+  </div>
+</header>
+
+
+  <!-- About Us Section -->
+  <section class="section">
+    <h1>About EA Hotel & Resort</h1>
+    <p>
+      Welcome to EA Hotel & Resort — your luxurious getaway nestled in the heart of the city. Our hotel is a blend of modern elegance and timeless hospitality, offering you the finest experiences for both leisure and business travel.
+    </p>
+    <p>
+      Established in 2005, EA Hotel & Resort has consistently been rated among the top hotels in the region. We offer state-of-the-art rooms, exquisite dining experiences, a relaxing spa, and world-class event venues. Our mission is to make your stay memorable by delivering personalized service and exceptional comfort.
+    </p>
+    <p>
+      Whether you're here for a romantic escape, a family vacation, or a corporate retreat, our team is dedicated to ensuring every aspect of your visit exceeds expectations. Join us and experience the warmth and sophistication that define EA Hotel & Resort.
+    </p>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section class="section">
+    <h1>Contact Us</h1>
+    <div class="contact-details">
+      <p><strong>Phone:</strong> +92 123 4567890</p>
+      <p><strong>Email:</strong> info@eahotel.com</p>
+      <p><strong>Address:</strong> Plot #45, Beach View Road, Clifton, Karachi, Pakistan</p>
+      <p><strong>Hours:</strong> Open 24/7, 365 Days a Year</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    &copy; 2025 EA Hotel & Resort. All rights reserved.
+  </footer>
+<script>
+  const guestUsername = localStorage.getItem("guestUsername")
+
+   const userInfo = document.getElementById("user-info");
+  if (guestUsername) {
+    userInfo.innerHTML = `<i class="fas fa-user-circle"></i> ${guestUsername}`;
+  }
+</script>
+</body>
+</html>

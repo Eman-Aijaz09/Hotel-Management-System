@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book a Room - EA Hotel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 0;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    .book-now {
+      background-color: #ff9900;
+      padding: 8px 15px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .book-now:hover {
+      background-color: #cc7a00;
+    }
+
+    .booking-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .submit-btn {
+      background-color: #ff6600;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      margin-top: 25px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #e65c00;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">🏨 EA Hotel & Resort</div>
+    <nav class="nav-links">
+      <a href="guestdashboard.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="room.html">Rooms</a>
+      <a href="bookinghistory.html">Your History</a>
+      <a href="login.html" class="book-now">Log out</a>
+    </nav>
+    <div id="user-info" style="color:white; font-size:16px;"></div>
+  </header>
+
+  <div class="booking-container">
+    <h2>Book a Room</h2>
+    <form action="receipt.html" method="get" id="bookingForm">
+      <label for="guestName">Guest Name</label>
+      <input type="text" id="guestName" name="guestName" required>
+
+      <label for="roomId">Room ID</label>
+      <input type="text" id="roomId" name="roomId" required readonly>
+
+      <label for="roomNumber">Room Number</label>
+      <input type="text" id="roomNumber" name="roomNumber" required readonly>
+
+      <label for="roomCategory">Room Category</label>
+      <input type="text" id="roomCategory" name="roomCategory" required readonly>
+
+      <label for="roomPrice">Room Price</label>
+      <input type="number" id="roomPrice" name="roomPrice" required readonly>
+
+      <label for="checkin">Check-In Date</label>
+      <input type="date" id="checkin" name="checkin" required>
+
+      <label for="checkout">Check-Out Date</label>
+      <input type="date" id="checkout" name="checkout" required>
+
+      <label for="bookingDate">Booking Date</label>
+      <input type="date" id="bookingDate" name="bookingDate" readonly>
+
+      <label for="paymentMethod">Payment Method</label>
+      <select id="paymentMethod" name="paymentMethod" required>
+        <option value="">Select Payment Method</option>
+        <option>Cash</option>
+        <option>Credit/Debit Card</option>
+        <option>Corporate Account</option>
+        <option>Digital Wallet</option>
+      </select>
+
+      <button type="submit" class="submit-btn">Confirm Booking</button>
+    </form>
+  </div>
+
+<script>
+  const selectedRoom = JSON.parse(localStorage.getItem("selectedRoom"));
+  const username = localStorage.getItem("guestUsername");
+
+  const today = new Date();
+  if (today.getHours() >= 0 && today.getMinutes() > 0) {
+    today.setDate(today.getDate() + 1);
+  }
+
+  const formattedDate = today.toISOString().split("T")[0];
+  document.getElementById("bookingDate").value = formattedDate;
+  document.getElementById("checkin").setAttribute("min", formattedDate);
+
+  document.getElementById("checkin").addEventListener("change", function () {
+    const checkinDate = this.value;
+    document.getElementById("checkout").setAttribute("min", checkinDate);
+  });
+
+  if (selectedRoom) {
+    document.getElementById("roomId").value = selectedRoom.id;
+    document.getElementById("roomNumber").value = selectedRoom.number;
+    document.getElementById("roomCategory").value = selectedRoom.category;
+    document.getElementById("roomPrice").value = selectedRoom.price;
+  }
+
+  document.getElementById("bookingForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const checkin = document.getElementById("checkin").value;
+    const checkout = document.getElementById("checkout").value;
+
+    if (checkin < formattedDate) {
+      alert("Check-in date cannot be before today.");
+      return;
+    }
+
+    if (checkout <= checkin) {
+      alert("Check-out date must be after check-in date.");
+      return;
+    }
+
+    const data = {
+      guestname: document.getElementById("guestName").value,
+      username: username,
+      checkInDate: checkin,
+      checkOutDate: checkout,
+      bookingDate: formattedDate,
+      roomCategory: selectedRoom.category,
+      roomId: selectedRoom.id,
+      roomnumber: selectedRoom.number,
+      roomPrice: selectedRoom.price,
+      paymentMethod: document.getElementById("paymentMethod").value
+    };
+
+    localStorage.setItem("bookingData", JSON.stringify(data));
+
+    const response = await fetch("http://localhost:5189/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      data.bookingId = result.bookingId;
+      localStorage.setItem("bookingData", JSON.stringify(data));
+      alert("Booking confirmed!");
+      window.location.href = "receipt.html";
+    } else {
+      alert("Failed to book. Please try again.");
+    }
+  });
+
+  const userInfo = document.getElementById("user-info");
+  if (username) {
+    userInfo.innerHTML = `<i class="fas fa-user-circle"></i> ${username}`;
+  }
+</script>
+
+</body>
+</html>

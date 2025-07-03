@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      background: url(background.jpg) no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(255, 255, 255, 0);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: #553006d8;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    h2 {
+      color: #dfd3bd;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #d1b279f8;
+      border-radius: 5px;
+      background-color: #d1b279f8;
+      color: white;
+      font-size: 14px;
+    }
+
+    select option {
+      background-color: #553006;
+      color: white;
+    }
+
+    input::placeholder {
+      color: #ebe1e1;
+      font-size: 14px;
+    }
+
+    .checkbox {
+      margin-top: 8px;
+    }
+
+    .checkbox label {
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .links a {
+      color: #dae0e7;
+      text-decoration: none;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: rgb(221, 34, 34);
+    }
+
+    input.error {
+      border: 2px solid red;
+      font-size: medium;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h2>Sign Up</h2>
+    <form id="signupForm" action="http://localhost:5189/register" method="post">
+      <input id="username" type="text" name="username" placeholder="Username" required>
+      <div class="message error" id="usernameError" style="display: none;"></div>
+      <input type="email" name="email" placeholder="Email Address" required>
+      <input type="password" name="password" id="password" placeholder="Password" required>
+
+      <select name="role" required>
+        <option value="" disabled selected>Select Role</option>
+        <option value="guest">Guest</option>
+        <option value="staff">Staff</option>
+      </select>
+
+      <div class="checkbox">
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword">Show Password</label>
+      </div>
+
+      <div class="message" id="passwordMessage"></div>
+      <button type="submit">Create Account</button>
+    </form>
+
+    <div class="message" id="submitMessage"></div>
+    <div class="links">
+      <a href="login.html">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <!-- Spinner -->
+  <div id="spinner" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
+    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #553006; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
+  </div>
+
+  <script>
+  const showPassword = document.getElementById('showPassword');
+  const password = document.getElementById('password');
+  const form = document.getElementById('signupForm');
+  const spinner = document.getElementById('spinner');
+  const message = document.getElementById('passwordMessage');
+  const submitMessage = document.getElementById('submitMessage');
+  const usernameInput = document.getElementById('username');
+  const usernameError = document.getElementById('usernameError');
+
+  showPassword.addEventListener('change', () => {
+    password.type = showPassword.checked ? 'text' : 'password';
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Reset UI
+    submitMessage.textContent = '';
+    usernameError.style.display = 'none';
+    usernameInput.classList.remove('error');
+
+    // Password length check
+    if (password.value.length < 8) {
+      message.textContent = "Password should be at least 8 characters long.";
+      message.className = "message error";
+      password.classList.add('error');
+      return;
+    } else {
+      message.textContent = "";
+      password.classList.remove('error');
+    }
+
+    // Show spinner
+    spinner.style.display = 'block';
+
+    // Gather form data
+    const formData = new FormData(form);
+
+    try {
+     const response = await fetch(form.action, {
+  method: 'POST',
+  body: formData
+});
+
+const result = await response.json();
+spinner.style.display = 'none';
+
+if (!response.ok) {
+  if (result.message?.includes("already exists")) {
+    usernameError.textContent = "Username is already taken. Please try something else.";
+    usernameError.style.display = 'block';
+    usernameInput.classList.add('error');
+  } else {
+    submitMessage.textContent = result.message || "An error occurred.";
+    submitMessage.className = "message error";
+  }
+} else {
+  const userRole = result.role;
+  const userName = result.username;
+  submitMessage.textContent = "Account created successfully!";
+  submitMessage.className = "message success";
+   const role = formData.get("role");
+    const username = formData.get("username");
+
+    localStorage.setItem(`${role}Username`, username);
+    localStorage.setItem(`${role}Role`, role);
+  setTimeout(() => {
+    if (userRole === "admin") {
+      window.location.href = "admin.html";
+    } else if (userRole === "staff") {
+      window.location.href = "staff.html";
+    } else if (userRole === "guest") {
+      window.location.href = "guestdashboard.html";
+    }
+  }, 1000);
+}
+
+
+    } catch (error) {
+      spinner.style.display = 'none';
+      submitMessage.textContent = "An error occurred. Please try again.";
+      submitMessage.className = "message error";
+    }
+  });
+</script>
+</body>
+</html>

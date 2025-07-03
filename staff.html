@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Dashboard - EA Hotel & Resort</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    /* Hero Section */
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
+      background-size: cover;
+      background-position: center;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero-content {
+      background-color: rgba(0,0,0,0.5);
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .hero-content h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .hero-content p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .hero-button {
+      background-color: #ff9900;
+      padding: 10px 20px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .hero-button:hover {
+      background-color: #cc7a00;
+    }
+
+    .dashboard {
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .dashboard h1 {
+      margin-bottom: 30px;
+      font-size: 32px;
+      color: #1c1b29;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    .dashboard-card {
+      background-color: white;
+      width: 260px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .dashboard-card:hover {
+      transform: scale(1.03);
+    }
+
+    .dashboard-card h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .dashboard-card p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-card a {
+      background-color: #ff9900;
+      color: white;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .dashboard-card a:hover {
+      background-color: #cc7a00;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">👨‍💼 EA Hotel Staff Portal</div>
+<nav class="nav-links" style="display: flex; align-items: center; gap: 25px;">
+
+  <a href="staffdashboard.html">Dashboard</a>
+
+  <a href="login.html">Logout</a>
+    <div style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
+    <span>👤</span>
+    <span id="staff-name" style="text-transform: capitalize;"></span>
+    <span style="font-size: 14px; opacity: 0.8;">( <span id="role-label"></span> )</span>
+  </div>
+</nav>
+
+  </header>
+
+  <!-- Hero Section (Replicated from Guest Dashboard) -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 id="hero-greeting">Welcome</h1>
+      <p>Support guest satisfaction with your expertise and service.</p>
+      <a href="task.html" class="hero-button">View Tasks</a>
+    </div>
+  </section>
+
+  <!-- Staff Dashboard Content -->
+  <section class="dashboard">
+    <h1>Welcome to Staff Dashboard</h1>
+    <div class="card-grid">
+      <div class="dashboard-card">
+        <h3>Check Payroll</h3>
+        <p>View your salary, deductions, and payment history.</p>
+        <a href="payroll.html">View Payroll</a>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>Attendance</h3>
+        <p>Review your attendance records and clock-in history.</p>
+        <a href="attendanceDisplay.html">Check Attendance</a>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>Task List</h3>
+        <p>See your current tasks, deadlines, and progress.</p>
+        <a href="task.html">View Tasks</a>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>Inventory</h3>
+        <p>Manage and monitor available hotel inventory.</p>
+        <a href="inventory.html">Manage Inventory</a>
+      </div>
+    </div>
+  </section>
+<script>
+  const staffName = localStorage.getItem("staffUsername");
+  const staffRole = localStorage.getItem("staffRole");
+
+  if (staffName && staffRole === "staff") {
+    const firstName = staffName.split("_")[0];
+    document.getElementById("staff-name").textContent = staffName;
+    document.getElementById("role-label").textContent = staffRole.charAt(0).toUpperCase() + staffRole.slice(1);
+    document.getElementById("hero-greeting").textContent = "Welcome " + firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  } else {
+    window.location.href = "login.html";
+  }
+</script>
+
+
+</body>
+</html>

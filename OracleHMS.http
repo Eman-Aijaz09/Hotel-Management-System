@@ -1,0 +1,6 @@
+@OracleHMS_HostAddress = http://localhost:5189
+
+GET {{OracleHMS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

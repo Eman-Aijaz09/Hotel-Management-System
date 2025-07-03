@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Booking Confirmation - EA Hotel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 30px;
+    }
+
+    .receipt-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .receipt-item {
+      margin: 15px 0;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .value {
+      margin-left: 10px;
+    }
+
+    .thank-you {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt-container">
+    <h2>Booking Receipt</h2>
+    <div class="receipt-item"><span class="label">Booking ID:</span><span class="value" id="bookingId">#BK123456</span></div>
+    <div class="receipt-item"><span class="label">Guest Name:</span><span class="value" id="guestName"></span></div>
+    <div class="receipt-item"><span class="label">Room ID:</span><span class="value" id="roomId"></span></div>
+    <div class="receipt-item"><span class="label">Room Number:</span><span class="value" id="roomNumber"></span></div>
+    <div class="receipt-item"><span class="label">Room Category:</span><span class="value" id="roomCategory"></span></div>
+    <div class="receipt-item"><span class="label">Room Price:</span><span class="value" id="roomPrice"> </span>$</div>
+    <div class="receipt-item"><span class="label">Payment Method:</span><span class="value" id="paymentMethod"></span></div>
+    <div class="receipt-item"><span class="label">Check-in Date:</span><span class="value" id="checkInDate"></span></div>
+    <div class="receipt-item"><span class="label">Check-out Date:</span><span class="value" id="checkOutDate"></span></div>
+    <div class="receipt-item"><span class="label">Booking Date:</span><span class="value" id="bookingDate"></span></div>
+
+    <p class="thank-you">✅ Thank you! Your booking has been confirmed.</p>
+    <p style="text-align: center; margin-top: 20px;">
+  <a href="guestdashboard.html" style="color: #007BFF; text-decoration: none;">🔙 Proceed Back to Home</a>
+</p>
+
+  </div>
+
+  <script>
+    const bookingData = JSON.parse(localStorage.getItem("bookingData"));
+
+    if (bookingData) {
+      document.getElementById("bookingId").textContent = bookingData.bookingId || "#BK123456";
+      document.getElementById("guestName").textContent = bookingData.guestname;
+      document.getElementById("roomId").textContent = bookingData.roomId;
+      document.getElementById("roomNumber").textContent = bookingData.roomnumber || "-";
+      document.getElementById("roomCategory").textContent = bookingData.roomCategory;
+      document.getElementById("roomPrice").textContent += bookingData.roomPrice;
+      document.getElementById("paymentMethod").textContent = bookingData.paymentMethod || "Online Payment";
+      document.getElementById("checkInDate").textContent = bookingData.checkInDate;
+      document.getElementById("checkOutDate").textContent = bookingData.checkOutDate;
+      document.getElementById("bookingDate").textContent = bookingData.bookingDate;
+    } else {
+      document.querySelector(".receipt-container").innerHTML = "<h2>⚠ Booking Data Not Found</h2><p>Please complete your booking again.</p>";
+    }
+  </script>
+</body>
+</html>

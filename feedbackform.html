@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit Feedback</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-size: cover;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.75);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .feedback-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px 35px;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 6px;
+      font-size: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+
+    textarea::placeholder {
+      color: #999;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .checkbox-label {
+      margin-top: 12px;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn {
+      margin-top: 25px;
+      padding: 12px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .success-message {
+      color: blue;
+    }
+
+    .error-message {
+      color: rgb(255, 61, 61);
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .feedback-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="feedback-container">
+      <h2>Submit Your Feedback</h2>
+      <form id="feedbackForm">
+        <label for="description">Description:</label>
+        <textarea id="description" placeholder="Write your feedback..." required></textarea>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="anonymous" />
+          Submit as Anonymous
+        </label>
+
+        <label for="stars">Rate Us:</label>
+        <select id="stars" required>
+          <option value="">Select Stars</option>
+          <option value="5">⭐ 5 - Excellent</option>
+          <option value="4">⭐ 4 - Good</option>
+          <option value="3">⭐ 3 - Average</option>
+          <option value="2">⭐ 2 - Poor</option>
+          <option value="1">⭐ 1 - Bad</option>
+        </select>
+
+        <input type="hidden" id="username" />
+
+        <button type="submit" class="btn">Submit Feedback</button>
+      </form>
+
+      <div style="text-align:center; margin-top:15px;">
+        <a href="guestdashboard.html">← Return to Home</a>
+      </div>
+
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <script>
+    const userId = localStorage.getItem("guestUserId");
+    const username = localStorage.getItem("guestUsername");
+
+    document.getElementById("feedbackForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const description = document.getElementById("description").value;
+      const stars = parseInt(document.getElementById("stars").value);
+      const isAnonymous = document.getElementById("anonymous").checked;
+
+      const feedback = {
+        userId: userId,
+        username: username,
+        description: description,
+        stars: stars,
+        feedbackType: isAnonymous ? "Anonymous" : "non-anonymous"
+      };
+
+      const res = await fetch("http://localhost:5189/submitfeedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(feedback)
+      });
+
+      const msg = document.getElementById("message");
+      if (res.ok) {
+        msg.className = "success-message";
+        msg.innerHTML = "✅ Feedback Submitted!"
+        document.getElementById("feedbackForm").reset();
+      } else {
+        msg.className = "error-message";
+        msg.textContent = "❌ Failed to submit feedback. Try again.";
+      }
+    });
+  </script>
+</body>
+</html>

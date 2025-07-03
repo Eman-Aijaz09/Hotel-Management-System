@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Available Rooms - EA Hotel & Resort</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    /* Sticky Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    .book-now {
+      background-color: #ff9900;
+      padding: 8px 15px;
+      border-radius: 5px;
+      color: white;
+    }
+    .book-now:hover {
+      background-color: #cc7a00;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    /* Room Card */
+    .room-card {
+      display: flex;
+      background: #fff;
+      margin: 20px 0;
+      color: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .room-card img {
+      width: 300px;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .room-details {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .room-category {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #7d4c1b;
+    }
+
+    .room-price {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #c77b00;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">🏨 EA Hotel & Resort</div>
+      <nav class="nav-links">
+      <a href="guestdashboard.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="room.html">Rooms</a>
+      <a href="bookinghistory.html">Your History</a>
+      <a href="login.html" class="book-now">Log out</a>
+    </nav>
+  </header>
+
+  <!-- Available Rooms Section -->
+  <div class="container" id="roomList">
+    <h2>Available Rooms</h2>
+  </div>
+
+  <script>
+    async function fetchRooms() {
+      try {
+        const response = await fetch("http://localhost:5189/rooms");
+        const rooms = await response.json();
+
+        const container = document.getElementById("roomList");
+
+       rooms.forEach(room => {
+  const card = document.createElement("div");
+  card.className = "room-card";
+
+  const isOccupied = room.ROOMSTATUS.toLowerCase() === "occupied";
+
+  card.innerHTML = `
+    <img src="images/${room.ROOMCATEGORY.toLowerCase()}.jpg" alt="${room.ROOMCATEGORY}" 
+     onerror="this.onerror=null;this.src='images/default.jpg';">
+    <div class="room-details">
+      <div class="room-category">${room.ROOMCATEGORY} Room</div>
+      <p>Room Number: ${room.ROOMNUMBER}</p>
+      <p>Status: ${room.ROOMSTATUS}</p>
+      <div class="room-price">Price: $${room.ROOMPRICE} / night</div>
+      <button 
+        class="book-btn" 
+        ${isOccupied ? "disabled" : ""} 
+        style="margin-top: 15px; padding: 10px 15px; background-color: ${isOccupied ? "#ccc" : "#28a745"}; color: white; border: none; border-radius: 5px; cursor: ${isOccupied ? "not-allowed" : "pointer"};">
+        ${isOccupied ? "Not Available" : "Book This Room"}
+      </button>
+    </div>
+  `;
+
+  container.appendChild(card);
+  if (!isOccupied) {
+  const bookBtn = card.querySelector(".book-btn");
+
+  
+bookBtn.addEventListener("click", () => {
+  const roomData = {
+    id: room.ROOMID,
+    number: room.ROOMNUMBER,
+    category: room.ROOMCATEGORY,
+    price: room.ROOMPRICE
+  };
+  localStorage.setItem("selectedRoom", JSON.stringify(roomData));
+  window.location.href = "booking.html";
+});
+}
+
+});
+
+      } catch (error) {
+        console.error("Error fetching room data:", error);
+      }
+    }
+
+    fetchRooms();
+  </script>
+</body>
+</html>

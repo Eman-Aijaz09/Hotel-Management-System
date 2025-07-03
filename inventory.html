@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Inventory</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #2c3e50;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .in-stock {
+      color: green;
+      font-weight: bold;
+    }
+    .out-of-stock {
+      color: red;
+      font-weight: bold;
+    }
+    .scroll-link {
+      color: blue;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    #supplierSection {
+      margin-top: 50px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Hotel Inventory</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Item ID</th>
+        <th>Item Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="inventoryTable">
+      <!-- Inventory rows -->
+    </tbody>
+  </table>
+
+  <div id="supplierSection">
+    <h2>Supplier Details</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Supplier ID</th>
+          <th>Supplier Name</th>
+          <th>Contact No</th>
+        </tr>
+      </thead>
+      <tbody id="supplierTable">
+        <!-- Supplier rows -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadInventory() {
+      try {
+        const response = await fetch("http://localhost:5189/inventory");
+        const data = await response.json();
+        const table = document.getElementById("inventoryTable");
+        table.innerHTML = "";
+
+        data.forEach(item => {
+          const row = document.createElement("tr");
+
+          const statusClass = item.status === 'In Stock' ? 'in-stock' : 'out-of-stock';
+          const statusContent = item.status === 'In Stock'
+            ? item.status
+            : `<span class="scroll-link" onclick="scrollToSuppliers()">${item.status}</span>`;
+
+          row.innerHTML = `
+            <td>${item.itemid}</td>
+            <td>${item.itemname}</td>
+            <td>${item.itemquantity}</td>
+            <td class="${statusClass}">${statusContent}</td>
+          `;
+          table.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Failed to load inventory:", err);
+        document.getElementById("inventoryTable").innerHTML =
+          "<tr><td colspan='4'>Error loading inventory data.</td></tr>";
+      }
+    }
+
+    async function loadSuppliers() {
+      try {
+        const response = await fetch("http://localhost:5189/suppliers"); // Change to your actual endpoint
+        const data = await response.json();
+        const table = document.getElementById("supplierTable");
+        table.innerHTML = "";
+
+        data.forEach(supplier => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${supplier.SUPPLIERID}</td>
+            <td>${supplier.SUPPLIERNAME}</td>
+            <td>${supplier.CONTACTNO}</td>
+          `;
+          table.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Failed to load suppliers:", err);
+        document.getElementById("supplierTable").innerHTML =
+          "<tr><td colspan='3'>Error loading supplier data.</td></tr>";
+      }
+    }
+
+    function scrollToSuppliers() {
+      document.getElementById("supplierSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    window.onload = () => {
+      loadInventory();
+      loadSuppliers();
+    };
+  </script>
+</body>
+</html>

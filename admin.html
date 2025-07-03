@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - EA Hotel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    /* Hero section for admin */
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero-content {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .hero-content h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .admin-section {
+      padding: 40px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      background-color: #fafafa;
+    }
+
+    .card {
+      background-color: white;
+      width: 300px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .card a {
+      text-decoration: none;
+      padding: 10px 20px;
+      background-color: #ff9900;
+      color: white;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+
+    .card a:hover {
+      background-color: #cc7a00;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">🔒 Admin Panel - EA Hotel</div>
+    <nav class="nav-links">
+<nav class="nav-links" style="display: flex; align-items: center; gap: 25px;">
+
+  <a href="admin.html">Dashboard</a>
+  <a href="login.html">Logout</a>
+    <div style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
+    <span>👤</span>
+    <span id="admin-name" style="text-transform: capitalize;"></span>
+    <span style="font-size: 14px; opacity: 0.8;">( <span id="role-label"></span> )</span>
+  </div>
+</nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 id="hero-greeting">Welcome</h1>
+      <p>Manage hotel operations with ease and control.</p>
+    </div>
+  </section>
+
+  <section class="admin-section">
+    <div class="card">
+      <h3>User Management</h3>
+      <p>View and delete users registered in the system.</p>
+      <a href="adminGuestmgt.html">Manage Users</a>
+    </div>
+
+    <div class="card">
+      <h3>Feedback & Complaints</h3>
+      <p>View all feedback or forward complaints made by users</p>
+      <a href="adminViewFeedback.html">Handle Feedback</a>
+    </div>
+    <div class="card">
+      <h3>Staff Management</h3>
+      <p>View and delete staff registered in the system.</p>
+      <a href="adminStaffmgt.html">Manage Staff</a>
+    </div>
+  </section>
+<script>
+  const adminName = localStorage.getItem("adminUsername");
+  const adminRole = localStorage.getItem("adminRole");
+
+  if (adminName && adminRole === "admin") {
+    const firstName = adminName.split("_")[0];
+    document.getElementById("admin-name").textContent = adminName;
+    document.getElementById("role-label").textContent = adminRole.charAt(0).toUpperCase() + adminRole.slice(1);
+    document.getElementById("hero-greeting").textContent = "Welcome " + firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  } else {
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Tasks - EA Hotel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .task-section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .task-section h1 {
+      font-size: 30px;
+      margin-bottom: 30px;
+      color: #1c1b29;
+      text-align: center;
+    }
+
+    .task-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .task-table th, .task-table td {
+      padding: 15px 20px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .task-table th {
+      background-color: #1c1b29;
+      color: white;
+    }
+
+    .task-table tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    .status-completed {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .status-inprogress {
+      color: blue;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">👨‍💼 EA Hotel Staff Portal</div>
+    <nav class="nav-links">
+      <a href="staff.html">Dashboard</a>
+  
+      <a href="login.html">Logout</a>
+      <div class="nav-user">
+        <span>👤</span>
+        <span id="staff-name" style="text-transform: capitalize;"></span>
+        <span style="font-size: 14px; opacity: 0.8;">(<span id="role-label"></span>)</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Task Section -->
+  <section class="task-section">
+    <h1>Your Assigned Tasks</h1>
+    <table class="task-table" id="taskTable">
+      <thead>
+        <tr>
+          <th>Task ID</th>
+          <th>Description</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Tasks will be inserted here dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    const staffUsername = localStorage.getItem("staffUsername");
+    const staffRole = localStorage.getItem("staffRole");
+     const staffId = localStorage.getItem("staffUserId");
+    // Redirect if not staff
+    if (!staffUsername || staffRole !== "staff") {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("staff-name").textContent = staffUsername;
+      document.getElementById("role-label").textContent = staffRole.charAt(0).toUpperCase() + staffRole.slice(1);
+    }
+
+    // Fetch tasks from server and populate table
+    async function loadTasks() {
+      try {
+        const response = await fetch("http://localhost:5189/tasks?staff=" + staffId);
+        const tasks = await response.json();
+
+        const tableBody = document.querySelector("#taskTable tbody");
+        tableBody.innerHTML = "";
+
+        if (tasks.length === 0) {
+          tableBody.innerHTML = "<tr><td colspan='3'>No tasks assigned.</td></tr>";
+          return;
+        }
+
+        tasks.forEach(task => {
+          const row = document.createElement("tr");
+
+          const statusClass = task.STATUS.toLowerCase().replace(" ", "").includes("complete")
+            ? "status-completed"
+            : task.STATUS.toLowerCase().includes("progress")
+              ? "status-inprogress"
+              : "status-pending";
+
+          row.innerHTML = `
+            <td>${task.TASKID}</td>
+            <td>${task.TASKDESCRIPTION}</td>
+            <td class="${statusClass}">${task.STATUS}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+      }
+    }
+
+    loadTasks();
+  </script>
+
+</body>
+</html>

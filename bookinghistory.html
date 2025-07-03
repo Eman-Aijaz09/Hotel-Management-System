@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Booking History - EA Hotel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1c1b29;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ffcc00;
+    }
+
+    .book-now {
+      background-color: #ff9900;
+      padding: 8px 15px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .book-now:hover {
+      background-color: #cc7a00;
+    }
+
+    /* Hero Section */
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
+      background-size: cover;
+      background-position: center;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero-content {
+      background-color: rgba(0,0,0,0.6);
+      padding: 25px 40px;
+      border-radius: 10px;
+    }
+
+    .hero-content h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .hero-content p {
+      font-size: 16px;
+    }
+
+    /* Booking Cards Section */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-bottom: 25px;
+      transition: transform 0.2s ease;
+    }
+
+    .booking-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .booking-header {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+
+    .booking-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .detail-block {
+      background-color: #f9f9f9;
+      padding: 12px 15px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+    }
+
+    .detail-label {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-weight: 500;
+      font-size: 15px;
+      color: #333;
+    }
+
+    #user-info {
+      color: white;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">🏨 EA Hotel & Resort</div>
+    <nav class="nav-links">
+      <a href="guestdashboard.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="room.html">Rooms</a>
+      <a href="#">Your History</a>
+      <a href="login.html" class="book-now">Log out</a>
+    </nav>
+    <div id="user-info"></div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Your Booking History</h1>
+      <p>See your past and current stays with us</p>
+    </div>
+  </section>
+
+  <!-- Booking History Container -->
+  <div class="container" id="bookingContainer">
+    <!-- Cards will be inserted here -->
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const username = localStorage.getItem("guestUsername");
+      const role = localStorage.getItem("guestRole");
+
+      if (!username || !role) {
+        alert("You are not logged in.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("user-info").innerHTML = `<i class="fas fa-user-circle"></i> ${username}(${role})`;
+
+      try {
+        const response = await fetch(`http://localhost:5189/api/bookinghistory/${username}`);
+        if (!response.ok) throw new Error("Failed to fetch booking history");
+
+        const bookings = await response.json();
+        const container = document.getElementById("bookingContainer");
+
+        if (bookings.length === 0) {
+          container.innerHTML = "<p>No booking history found.</p>";
+          return;
+        }
+
+        bookings.forEach(b => {
+          const card = document.createElement("div");
+          card.classList.add("booking-card");
+
+          card.innerHTML = `
+            <div class="booking-header">Booking ID: ${b.bookingId}</div>
+            <div class="booking-details">
+              <div class="detail-block">
+                <div class="detail-label">Guest</div>
+                <div class="detail-value">${b.guestName}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Room ID</div>
+                <div class="detail-value">${b.roomId}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Room Number</div>
+                <div class="detail-value">${b.roomNumber}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Booked Category</div>
+                <div class="detail-value">${b.roomCategory}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Actual Category</div>
+                <div class="detail-value">${b.actualCategory}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Room Price</div>
+                <div class="detail-value">${b.roomPrice}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Room Status</div>
+                <div class="detail-value">${b.roomStatus}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Check-in Date</div>
+                <div class="detail-value">${b.checkInDate}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Check-out Date</div>
+                <div class="detail-value">${b.checkOutDate}</div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Booking Date</div>
+                <div class="detail-value">${b.bookingDate}</div>
+              </div>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred while fetching your booking history.");
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login / Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      background: url(background.jpg) no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(255, 255, 255,0);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: #553006d8;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    h2 {
+      color: #dfd3bd;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid#d1b279f8;
+      border-radius: 5px;
+      background-color:  #d1b279f8;
+    }
+
+    .checkbox {
+      margin-top: 8px;
+    }
+    .checkbox label {
+  color: white; 
+}
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .links a {
+      color: #dae0e7;
+      text-decoration: none;
+      display: block;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: rgb(202, 85, 85);
+    }
+    input::placeholder {
+     color: #ebe1e1;        
+    
+     font-size: 14px;   }  
+  select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #d1b279f8;
+  border-radius: 5px;
+  background-color: #d1b279f8;
+  color: white;
+  font-size: 14px;
+}
+
+select option {
+  background-color: #553006;
+  color: white;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" name="username" placeholder="username or email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <select name="role"  id="role" required>
+  <option value="" disabled selected >Select Role</option>
+  <option value="guest">Guest</option>
+  <option value="staff">Staff</option>
+  <option value="admin">Admin</option>
+</select>
+
+      <div class="checkbox">
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword" >Show Password</label>
+      </div>
+      <button type="submit">Login</button>
+      <div class="message" id="message"></div>
+    </form>
+    <div id="loginMessage"></div>
+    <div class="links">
+      <a href="signUp.html">Don't have an account? Sign Up</a>
+    </div>
+  </div>
+
+ <script>
+  const form = document.getElementById('loginForm');
+  const showPassword = document.getElementById('showPassword');
+  const message = document.getElementById('message');
+  const loginMessage = document.getElementById("loginMessage");
+  const passwordField = form.querySelector('input[name="password"]');
+
+  showPassword.addEventListener('change', () => {
+    passwordField.type = showPassword.checked ? 'text' : 'password';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // prevent page reload
+
+    // Clear previous messages
+    message.textContent = '';
+    loginMessage.textContent = '';
+    loginMessage.className = '';
+
+const formData = new FormData();
+formData.append("username", form.username.value);
+formData.append("password", form.password.value);
+formData.append("role", form.role.value);
+
+    try {
+      const response = await fetch("http://localhost:5189/login", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        loginMessage.textContent = "✅ Login successful!";
+        loginMessage.className = "message success";
+
+        
+const role = result.role;  // guest, staff, or admin
+const username = result.username;
+const userid = result.userid;
+
+localStorage.setItem(`${role}UserId`, userid);
+localStorage.setItem(`${role}Username`, username); // guestUsername, staffUsername, or adminUsername
+localStorage.setItem(`${role}Role`, role); // guestRole, staffRole, or adminRole
+
+        setTimeout(() => {
+          if (role === "guest") {
+            window.location.href = "guestDashboard.html";
+          } else if (role === "staff") {
+            window.location.href = "staff.html";
+          } else if (role === "admin") {
+            window.location.href = "admin.html";
+          }
+        }, 100);
+      } else {
+        loginMessage.textContent = result.message || "❌ Incorrect username or password.";
+        loginMessage.className = "message error";
+      }
+    } catch (err) {
+      loginMessage.textContent = "❌ An error occurred. Please try again.";
+      loginMessage.className = "message error";
+    }
+  });
+</script>
+
+  <div id="spinner" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
+  <div style="border: 4px solid #f3f3f3; border-top: 4px solid #553006; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
+</div>
+
+</body>
+</html>
