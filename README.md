@@ -3,11 +3,11 @@ This is a Hotel Management System developed in C# with an Oracle Database (XE).
 The system is designed to manage core hotel operations such as room bookings, inventory tracking, payroll, and more.
 
 ->Features:
-Room booking management
-User registration and login
-Inventory and supplier tracking
-Employee attendance and payroll
-Customer feedback management
+Room booking management,
+User registration and login,
+Inventory and supplier tracking,
+Employee attendance and payroll,
+Customer feedback management,
 Task assignments
 
 ->Technologies Used
