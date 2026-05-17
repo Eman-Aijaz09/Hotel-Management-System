@@ -15,7 +15,6 @@ C#
 ASP.NET
 HTML, CSS, JavaScript
 Oracle Database
-SQL Developer
 
 -> Project Structure:
 /bin                -> build output (not uploaded to GitHub)  
